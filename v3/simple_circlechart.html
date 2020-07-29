@@ -1,0 +1,64 @@
+<html>
+   <head>
+      <script type = "text/javascript" src = "https://d3js.org/d3.v4.min.js"></script>
+   </head>
+
+   <body>
+      <script>
+         var width = 400,height = 400;
+         
+         var data = [10, 20, 30];
+         
+         var colors = ['green', 'purple', 'yellow'];
+         
+         // 畫布 svg 的大小 
+         var svg = d3
+            .select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+         
+         var g = svg.selectAll("g")
+            .data(data)
+            .enter()
+            .append("g")
+            .attr("transform", function(d, i) {
+               return "translate(0,0)";
+            })
+         
+         // 對每個組元素 g 添加元素 circle
+         // 屬性 cx 為 每個圓的中心 x 座標
+         // 屬性 cy 為 每個圓的中心 y 座標
+         // 屬性 r 為 半徑 
+         // d 為 數據值， i 為 數據索引 
+         g.append("circle").transition().duration(2000).attr("cx", function(d, i) {
+            return i*75 + 50;
+         })
+         
+         .attr("cy", function(d, i) {
+            return 75;
+         })
+  
+         .attr("r", function(d) {
+            return d*1.5;
+         })
+         
+         .attr("fill", function(d, i){
+            return colors[i];
+         });
+         
+         // 對每個組元素 g 添加元素 text 
+         // 設定 x,y 座標 
+         // stoke：字體顏色 
+         g.append("text").transition().duration(2000).attr("x", function(d, i) {
+            return i * 75 + 45;
+         })
+         .attr("y", 75)
+         .attr("stroke", "black")
+         .attr("font-size", "10px")
+         .attr("font-family", "sans-serif").text(function(d) {
+            return d;
+         });
+      </script>
+   </body>
+</html>

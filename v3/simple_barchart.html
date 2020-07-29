@@ -1,0 +1,82 @@
+<html>
+   <head>
+      <script type = "text/javascript" src = "https://d3js.org/d3.v4.min.js"></script>
+      <style>
+         svg rect {
+            fill: gray;
+         }
+         
+         svg text {
+            fill: white;
+            font: 12px sans-serif;
+            text-anchor: end;
+         }
+      </style>
+   </head>
+
+   <body>
+      	<script type="text/javascript">
+      		// d3.js 用鏈式語法，將方法與句點鏈接在一起
+
+      		var data = [10, 5, 12, 15];
+
+      		// 選擇body 
+	         d3.select("body").html("<h1>Simple Bar Chart Example</h1>");
+
+	        // transition : 一個項目從一狀態轉換成另一狀態 
+	        // duration : 所需時間 
+
+	        // 加入transition().duration(2000) 增加動態效果(延遲)
+	         d3.select("body")
+			   .transition()
+			   .duration(2000)
+			   .style("background-color", "lightblue");
+
+	         // d3.select(".class")
+	         // d3.select("#id")
+	         
+	         // width：SVG宽度
+	         // Scalefactor：缩放到屏幕上可见的像素值
+	         // barHeight：水平条的静态高度
+	         var width = 300 
+	            scaleFactor = 20, 
+	            barHeight = 30;
+	         
+	         // 選擇body加入svg 畫布
+	         var graph = d3.select("body")
+	            .append("svg")
+	            .attr("width", width)
+	            .attr("height", barHeight * data.length);
+	         
+	         // 選擇所有組元素 g 
+	         // 如組元素 g 與data數量不一致 則加入 g 節點補足 
+	         // 加入屬性 transform 來支持圖形移動 
+	         // translate : 沿著x, y 軸的平移 
+	         // rotation : cx, cy是 x,y 軸為旋轉中心 | 未指定則默認當前原點 
+	         // ratio : sx
+
+	         var bar = graph.selectAll("g")
+	            .data(data)
+	            .enter()
+	            .append("g")
+	            .attr("transform", function(d, i) {
+	               return "translate(0," + i * barHeight + ")"
+	             });
+
+	         // 對於每個組元素 g 加入元素 rect 且設定其寬度與高度 
+	         bar.append("rect").transition().duration(2000)
+	         	.attr("width", function(d) {
+	            	return d * scaleFactor;
+		        })
+	        	.attr("height", barHeight - 1);
+	         
+	         // 對於每個組元素 g 加入元素 text，設定其x,y coordinates
+	         // dy：從y coordinate加.35 （下移）[用於垂直對齊文本]
+	         bar.append("text")
+	            .attr("x", function(d) { return (d*scaleFactor); })
+	            .attr("y", barHeight / 3)
+	            .attr("dy", ".35em")
+	            .text(function(d) { return d; });
+      	</script>
+   </body>
+</html>

@@ -1,0 +1,123 @@
+<html>  
+  <head>  
+        <meta charset="utf-8">  
+        <title>Simple Pie Chart</title>  
+  </head> 
+
+<style>
+
+
+</style>
+    <body>  
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>  
+        <script>
+         // 插入 html code 在元素 body
+         d3.select("body").html("<h1>Simple Pie Chart</h1>")
+        
+        var width = 400;
+        var height = 400;
+        var dataset = [ 30 , 10 , 43 , 55 , 13 ];
+        
+        var svg = d3.select("body")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height);
+        
+        var pie = d3.layout.pie();     // 利用布局轉換成適合作圖的數據 
+
+        var piedata = pie(dataset);    // 轉換後的數據 
+
+        console.log(piedata);
+        
+        var outerRadius = 150;         //外半径
+        var innerRadius = 0;           //内半径，为0则中间没有空白
+
+        // svg 有一個元素 path 路徑 
+        // 它可以表示其他任意圖形 
+        // 算是疊加功能 畫了一個圓後 pie chart 需要再分 sectors
+
+        var arc = d3.svg.arc()                     //弧生成器
+                    .innerRadius(innerRadius)      //设置内半径
+                    .outerRadius(outerRadius);     //设置外半径
+        
+        // 10 種顏色比例尺
+        var color = d3.scale.category10();
+        
+        var arcs = svg.selectAll("g")
+                      .data(piedata)
+                      .enter()
+                      .append("g")
+                      .attr("transform","translate("+ (width/2) +","+ (width/2) +")");
+        
+        // 對每個組元素 g 添加元素 path
+        arcs.append("path")
+            .attr("fill",function(d,i){      // fill: 填顏色
+                return color(i);
+            })
+            .attr("d",function(d){           // d 為 元素 path 的值，調用 弧生成器後返回的值賦值給 d     
+                return arc(d);
+            });
+        
+        // 在每個弧生成器 添加元素 text
+        arcs.append("text")
+            .attr("transform",function(d){
+                return "translate(" + arc.centroid(d) + ")";
+            })
+            .attr("text-anchor","middle")
+            .text(function(d){
+                return d.data;         // 被綁定是對象 其中 d.data 是轉換前的整數值 
+            });
+          
+        </script>  
+        
+      <script type="text/javascript">
+         // var data = {states:["UP", "Maharastra", "Bihar", "MP", "Gujarat", "WB", "TN"],
+         //             percent:[80.00, 70.00, 65.00, 60.00, 50.00, 49.00, 35.00]};
+
+         var data = [{states:"UP", percent:80.00}, {states:"Maharastra", percent:70.00}, {states:"Bihar", percent:60.00},
+         {states:"MP", percent:50.00}, {states:"Gujarat", percent:49.00}, {states:"WB", percent:35.00}, 
+         {states:"TN", percent:80.00}];
+
+         var height = 400, width = 400, radius = 400 / 2;
+
+         var svg = d3.select("body").append("svg")
+                                    .attr("height", height)
+                                    .attr("width", width);
+
+         var g = svg.append("g").attr("transform", "translate("+ (width/2) +","+ (height/2) +")");
+
+         var color = d3.scale.category10();
+
+         var pie = d3.layout.pie().value(function(d){
+            return d.percent;
+         });
+
+         var path = d3.svg.arc().outerRadius(radius - 10).innerRadius(0);
+
+         var label = d3.svg.arc().outerRadius(radius).innerRadius(radius - 80);
+
+         var pieData = pie(data);
+
+         var arc = g.selectAll(".arc")
+                     .data(pieData)
+                     .enter()
+                     .append("g")
+                     .attr("class", "arc");
+
+         arc.append("path")
+               .attr("d", path)
+               .attr("fill", function(d, i) { return color(i); });
+
+         arc.append("text").attr("transform", function(d){
+            return "translate(" + label.centroid(d) + ")";
+         })
+         .text(function(d) { return d.data.states; });
+
+         svg.append("g")
+            .attr("transform", "translate(" + (width / 2 - 120) + "," + 20 + ")")
+            .append("text").text("Top population states in india")
+            .attr("class", "title")
+
+      </script>
+   </body>  
+</html>  

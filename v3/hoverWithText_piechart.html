@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Hover with Text - Pie Chart</title>
+</head>
+<body>
+	<div id="chart"></div>
+
+
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> 
+	<script type="text/javascript">
+
+		var width = 500, height = 500, radius = Math.min(width, height) / 2;
+		var donutWidth = 75;
+		var lengendRectSize = 10, lengendSpacing = 30;
+
+		var color = d3.scale.category20b();
+
+		var svg = d3.select("body").append("svg").attr("width",width)
+												   .attr("height", height)
+												   .append("g")
+												   .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+
+		var arc = d3.svg.arc().innerRadius(radius - donutWidth)
+							  .outerRadius(radius);
+
+		var pie = d3.layout.pie()			// pie 生成器
+						   .value(function(d){ return d.count });
+
+		var tooltip = d3.select("body").append("div").attr("class", "tooltip");		// 生成 数据组合 tooltip
+
+		tooltip.append("div").attr("class", "label");
+		tooltip.append("div").attr("class", "count");
+		tooltip.append("div").attr("class", "percent");
+
+		var data = [{label:"AM", count:739.43}, {label:"BA", count:365.79}, {label:"CE", count:235.34}, 
+					{label:"DF", count:229.14}, {label:"ES", count:159.08}, {label:"GO", count:82.02}];
+
+
+		var path = svg.selectAll("path")		// 生成 path 元素
+					  .data(pie(data))
+					  .enter()
+					  .append("path")
+					  .attr("d", function(d){	// d 为 元素 path 的值，调用 弧生成器后返回的值赋值给 d  
+					  	return arc(d);
+					  })
+					  .attr("fill", function(d, i){		// 填满 path 
+					  	return color(i);
+					  });
+
+		// 移动到 path 元素上时显示
+		path.on("mouseover", function(d){
+			var total = d3.sum(data.map(function(d){
+				return d.count;
+			}));
+
+			console.log(d.data);
+
+			var percent = Math.round(1000 * d.data.count / total) / 10;
+
+			tooltip.select(".label").html(d.data.label);
+			tooltip.select(".count").html(d.data.count);
+			tooltip.select(".percent").html(percent + "%");
+			tooltip.style("display", "block");
+		});
+
+		// 
+		path.on("mouseout", function(){
+			tooltip.style("display", "none");
+		});
+
+		// legend 为 颜色组合的显示
+		var legend = svg.selectAll(".legend")	
+						.data(color.domain())				// data 放入颜色的定义域
+						.enter()
+						.append("g")
+						.attr("class", "legend")
+						.attr("transform", function(d, i){
+							var h = lengendRectSize + lengendSpacing;
+							var offset = h * color.domain().length / 2;
+							var horizontal = -2 * lengendRectSize;
+							var vertical = i * h - offset;
+							return 'translate(' + horizontal + ',' + vertical + ')';
+						});
+
+		// 加入元素 rect  
+		legend.append("rect").attr("width", 30)
+							 .attr("height", 30)
+							 .style("fill", color)
+							 .style("stroke", color);
+
+		// 加入元素 text 
+		legend.append("text").attr("x", lengendRectSize + lengendSpacing)
+							  .attr("y", lengendRectSize + 10)
+							  .text(function(d) { return data[d].label; });
+
+	</script>
+</body>
+</html>
